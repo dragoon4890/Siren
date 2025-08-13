@@ -59,7 +59,7 @@ class SpeechRecognizer:
                 
             # Log processing time
             lapse_time = time.time() - start_time
-            print(f"faster_whisper({info.language}):({lapse_time:.2f}s) : {text}")
+            print(f"faster_whisper lang={info.language} chars={len(text)} time={lapse_time:.2f}s text='{text[:80]}'")
             
             return text, info.language
             
@@ -71,32 +71,23 @@ class SpeechRecognizer:
 
     def recognize_fast_whisper(self, wav_file):
         start_time = time.time()
-        
         segments, info = self.model_fast_whisper.transcribe(wav_file, beam_size=5)
 
-        text = ""
-        for segment in segments:
-            text += segment.text
+        text = "".join(segment.text for segment in segments).strip()
 
-        # Trim leading/trailing whitespace
-        text = text.strip()
-
-        # Filter out common false positives
-        if text == "You" or text == "you":
+        # Basic false positive / noise filtering
+        if text in ("You", "you"):
             text = ""
-        # Filter out Korean news channel mentions
         if "MBC뉴스" in text or "MBC 뉴스" in text:
             text = ""
 
-        # Handle language detection issues - don't filter out "nn" completely
-        # Instead, if we get "nn" but have text, assume it's English
-        if info.language == "nn" and text:
-            info.language = "en"  # Default to English if language is unknown but we have text
-        elif info.language == "nn" and not text:
-            text = ""  # Only filter out if both language is unknown AND no text
-            
-        # Log processing time
+        # Handle unknown language code "nn" edge case
+        if info.language == "nn":
+            if text:
+                info.language = "en"
+            else:
+                text = ""
+
         lapse_time = time.time() - start_time
-        print(f"faster_whisper({info.language}):({lapse_time:.2f}s) : {text}")
-        
+        print(f"faster_whisper file lang={info.language} chars={len(text)} time={lapse_time:.2f}s text='{text[:80]}'")
         return text, info.language

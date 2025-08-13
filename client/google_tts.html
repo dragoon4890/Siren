@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google TTS Interface</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        textarea, select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        
+        textarea {
+            height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        
+        select {
+            cursor: pointer;
+        }
+        
+        textarea:focus, select:focus, input:focus {
+            outline: none;
+            border-color: #007acc;
+            box-shadow: 0 0 5px rgba(0,122,204,0.3);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #007acc, #0056b3);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #005a9e, #004080);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,122,204,0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #545b62);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #545b62, #3d4248);
+            transform: translateY(-2px);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        audio {
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+        
+        .api-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+        
+        .api-example h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .api-example code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .api-example pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗣️ Google TTS API</h1>
+        
+        <div class="form-group">
+            <label for="text">Your Text:</label>
+            <textarea id="text" placeholder="Enter any text you want to convert to speech...">Hello! This is Google Text-to-Speech. You can enter any text here and it will be converted to natural-sounding audio.</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="language">Language:</label>
+            <select id="language">
+                <option value="en-US">English (United States)</option>
+                <!-- Will be populated from voices_google.js -->
+            </select>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-primary" onclick="generateSpeech()">🎵 Generate Speech</button>
+            <button class="btn-secondary" onclick="showApiExample()">📖 API Usage</button>
+        </div>
+        
+        <div id="status" class="status"></div>
+        <audio id="audioPlayer" controls style="display:none;"></audio>
+        
+        <div class="api-example" id="apiExample" style="display:none;">
+            <h3>🔗 How to Use the TTS API</h3>
+            
+            <p><strong>Endpoint:</strong> <code>POST http://localhost:9090/tts</code></p>
+            
+            <p><strong>Request Body (JSON):</strong></p>
+            <pre>{
+  "text": "Your text here",
+  "language": "ja-JP"
+}</pre>
+            
+            <p><strong>cURL Example:</strong></p>
+            <pre>curl -X POST http://localhost:9090/tts \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Hello world","language":"en-US"}' \
+  --output speech.mp3</pre>
+            
+            <p><strong>JavaScript Example:</strong></p>
+            <pre>const response = await fetch('http://localhost:9090/tts', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    text: 'Hello world',
+    language: 'en-US'
+  })
+});
+
+const audioBlob = await response.blob();
+const audioUrl = URL.createObjectURL(audioBlob);
+// Use audioUrl with audio element</pre>
+            
+            <p><strong>Response:</strong> MP3 audio file (Content-Type: audio/mpeg)</p>
+        </div>
+    </div>
+
+    <script src="voices_google.js"></script>
+    <script>
+        // Voices will be loaded from voices_google.js
+        let availableVoices = [];
+        
+        // Check if voices are loaded from the external file
+        if (typeof window.googleVoices !== 'undefined') {
+            availableVoices = window.googleVoices;
+        } else if (typeof googleVoices !== 'undefined') {
+            availableVoices = googleVoices;
+        } else {
+            // Fallback voices if file doesn't load
+            availableVoices = [
+                { code: "en-US", name: "English (United States)" },
+                { code: "ja-JP", name: "Japanese (Japan)" },
+                { code: "de-DE", name: "German" },
+                { code: "fr-FR", name: "French" },
+                { code: "es-ES", name: "Spanish" },
+                { code: "it-IT", name: "Italian" },
+                { code: "pt-BR", name: "Portuguese (Brazil)" },
+                { code: "ru-RU", name: "Russian" },
+                { code: "ko-KR", name: "Korean" },
+                { code: "zh-CN", name: "Chinese (Mandarin)" }
+            ];
+        }
+
+        function populateLanguageSelect() {
+            const select = document.getElementById('language');
+            select.innerHTML = ''; // Clear existing options
+            
+            availableVoices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.code;
+                option.textContent = voice.name;
+                select.appendChild(option);
+            });
+            
+            // Set Japanese as default for demonstration
+            select.value = 'ja-JP';
+        }
+
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            status.style.display = 'block';
+            
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        async function generateSpeech() {
+            const text = document.getElementById('text').value.trim();
+            const language = document.getElementById('language').value;
+            
+            if (!text) {
+                showStatus('Please enter some text to synthesize.', 'error');
+                return;
+            }
+            
+            showStatus(`Generating speech in ${language}...`, 'info');
+            
+            try {
+                const response = await fetch('http://localhost:9090/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        language: language
+                    })
+                });
+                
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.style.display = 'block';
+                    audioPlayer.play();
+                    
+                    const selectedLanguage = availableVoices.find(v => v.code === language);
+                    showStatus(`✅ Speech generated successfully in ${selectedLanguage?.name || language}!`, 'success');
+                } else {
+                    const errorText = await response.text();
+                    showStatus(`❌ Error: ${response.status} - ${errorText}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function showApiExample() {
+            const apiExample = document.getElementById('apiExample');
+            if (apiExample.style.display === 'none') {
+                apiExample.style.display = 'block';
+            } else {
+                apiExample.style.display = 'none';
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateLanguageSelect();
+            
+            // Set sample Japanese text
+            document.getElementById('text').value = '石の上にも三年。これはGoogleの高品質な日本語音声合成のデモンストレーションです。';
+        });
+    </script>
+</body>
+</html>
