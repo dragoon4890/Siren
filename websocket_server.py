@@ -2,6 +2,7 @@ import datetime
 import logging
 from typing import Tuple
 from aiohttp import web
+import base64
 
 import settings
 from speech_recognizer import SpeechRecognizer
@@ -215,6 +216,116 @@ async def voices(request: web.Request) -> web.Response:
         logger.exception("Error listing voices")
         return web.Response(status=500, text=f"Failed to list voices: {e}")
 
+async def process_audio(request: web.Request) -> web.Response:
+    """Process audio: speech-to-text, translate, and generate TTS in sequence."""
+    try:
+        # Parse input JSON
+        data = await request.json()
+        audio_blob_b64 = data.get('audio_blob')
+        source_lang = data.get('source_lang', 'auto')  # auto-detect source language
+        target_lang = data.get('target_lang', 'ja')
+
+        if not audio_blob_b64:
+            return web.Response(status=400, text='Missing audio_blob parameter')
+
+        # Decode Base64 audio blob
+        audio_blob = base64.b64decode(audio_blob_b64)
+
+        # Step 1: Extract text from original audio using speech recognition
+        original_text, detected_lang = await extract_text_from_original_audio(audio_blob)
+        
+        if not original_text or original_text == "No speech detected":
+            return web.Response(status=400, text='No speech detected in audio')
+
+        # Step 2: Translate the extracted text
+        translated_text = await translate_text(original_text, detected_lang, target_lang)
+
+        # Step 3: Generate TTS for the translated text
+        translated_audio_blob = await synthesize_soundoftext(translated_text, target_lang)
+
+        # Encode audio blobs to Base64
+        original_audio_base64 = base64.b64encode(audio_blob).decode('utf-8')
+        translated_audio_base64 = base64.b64encode(translated_audio_blob).decode('utf-8')
+
+        # Return both original and translated audio blobs along with text
+        response_data = {
+            'original_audio_blob': original_audio_base64,
+            'translated_audio_blob': translated_audio_base64,
+            'original_text': original_text,
+            'translated_text': translated_text,
+            'detected_language': detected_lang
+        }
+        return web.json_response(response_data)
+
+    except Exception as e:
+        logger.exception("Error in process_audio API")
+        return web.Response(status=500, text=f"Internal Server Error: {e}")
+
+# ------------------------------------------------------------
+# Helper Functions for Audio Processing
+# ------------------------------------------------------------
+
+async def extract_text_from_original_audio(audio_blob):
+    """Extract text from audio blob using faster-whisper."""
+    try:
+        # Use the existing global recognizer instance
+        global recognizer
+        if recognizer is None:
+            # Initialize recognizer if not available
+            await initialize_recognizer()
+            if recognizer is None:
+                return "Speech recognizer not initialized", "unknown"
+        
+        # Use recognize_from_bytes method directly with audio blob
+        result, language = recognizer.recognize_from_bytes(audio_blob)
+        
+        return (result if result else "No speech detected", language)
+                
+    except Exception as e:
+        logger.exception("Error in extract_text_from_original_audio")
+        return f"Speech recognition error: {e}", "unknown"
+
+async def translate_text(text, source_lang, target_lang):
+    """Translate text using the existing translator."""
+    try:
+        # Use the existing global translator instance
+        global translator
+        if translator is None:
+            # Initialize translator if not available
+            await initialize_translator()
+            if translator is None:
+                return f"Translator not initialized"
+        
+        # Use the translator's translate method
+        translated = translator.translate(text, target_lang, source_lang)  # Note: target_lang first, then source_lang
+        return translated if translated else text
+                
+    except Exception as e:
+        logger.exception("Error in translate_text")
+        return f"Translation error: {e}"
+
+async def initialize_translator():
+    """Initialize the translator if not already done."""
+    global translator
+    if translator is None:
+        try:
+            logger.info("Initializing Gemini translator")
+            translator = Translator(settings.GEMINI_API_KEY)
+        except Exception as e:
+            logger.exception("Failed to initialize translator")
+            translator = None
+
+async def initialize_recognizer():
+    """Initialize the speech recognizer if not already done."""
+    global recognizer
+    if recognizer is None:
+        try:
+            logger.info("Initializing SpeechRecognizer (model=tiny, device=%s)", settings.DEVICE)
+            recognizer = SpeechRecognizer(settings.TRANSLATION_TARGET_LANGUAGE, settings.DEVICE)
+        except Exception as e:
+            logger.exception("Failed to initialize recognizer")
+            recognizer = None
+
 # ------------------------------------------------------------
 # Application Factory
 # ------------------------------------------------------------
@@ -230,6 +341,9 @@ def create_app() -> web.Application:
     
     # Voice listings
     app.router.add_get('/voices', voices)
+    
+    # Register the process_audio endpoint
+    app.router.add_post('/process_audio', process_audio)
     
     # Pre-flight CORS for endpoints
     app.router.add_options('/tts', tts)

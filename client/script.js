@@ -372,6 +372,7 @@ function parseLine(line){
     const regex = /^(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) \(([A-Za-z-]+)\)(.*)\(([^()]*)\)$/;
     const m = line.trim().match(regex);
     if(!m) return null;
+    console.log("Bombaclat ",m , regex)
     return { detected: m[2], original: m[3].trim(), translation: m[4].trim() };
 }
 async function maybeSpeakServerTTS(line){
