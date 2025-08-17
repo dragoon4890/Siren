@@ -43,6 +43,26 @@ The system implements an audio translation pipeline with voice cloning and emoti
 - **WebSocket Communication**: Bidirectional real-time data exchange
 - **Modular Architecture**: Separate services for speech, translation, TTS, and voice conversion
 
+## Technical Innovation & Differentiation
+
+### Real-time Processing Advantages
+Unlike traditional batch-processing systems, our architecture provides:
+
+- **Streaming Audio Processing**: True real-time translation with VAD-based segmentation
+- **Adaptive Noise Floor**: Dynamic adjustment to environmental conditions (`noiseRMS = noiseRMS × 0.95 + currentRMS × 0.05`)
+- **Intelligent Segmentation**: 3-7 second chunks with silence detection for optimal processing
+- **Sub-second Latency**: Voice activity detection with minimal delay
+
+### Advanced Voice Conversion
+- **[Seed-VC](https://github.com/Plachtaa/seed-vc) Integration**: State-of-the-art voice conversion using dual inputs (original audio + translated TTS)
+- **Emotion Preservation**: Implicit emotion transfer through voice characteristics rather than explicit emotion classification
+- **Service-Based Architecture**: Standalone voice conversion service with HTTP API and model caching
+
+### Modern Translation Pipeline
+- **LLM-Powered Translation**: Uses Google Gemini for context-aware translation vs. traditional neural machine translation
+- **Sequential Audio Management**: FIFO queue system ensures proper playback order with automatic memory cleanup
+- **WebSocket Communication**: Real-time bidirectional data exchange for streaming applications
+
 
 
 ## Setup Instructions
