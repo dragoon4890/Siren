@@ -29,4 +29,4 @@ SSL_KEY = "/path/to/privkey.pem"
 # whisper # Available models: tiny, base, small, medium, large-v1, large-v2, large-v3
 # Smaller models are much faster but slightly less accurate
 
-MODEL = "large-v2"
+MODEL = "tiny" 
