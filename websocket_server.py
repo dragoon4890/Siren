@@ -51,8 +51,8 @@ def ensure_components() -> None:
     """Initialize heavy components once (lazy)."""
     global recognizer, translator
     if recognizer is None:
-        logger.info("Loading SpeechRecognizer (model=tiny, device=%s)", settings.DEVICE)
-        recognizer = SpeechRecognizer(settings.TRANSLATION_TARGET_LANGUAGE, settings.DEVICE)
+        logger.info("Loading SpeechRecognizer (model=%s, device=%s)", settings.DEVICE)
+        recognizer = SpeechRecognizer(settings.TRANSLATION_TARGET_LANGUAGE, settings.DEVICE,settings.MODEL)
     if translator is None:
         logger.info("Initializing Gemini translator")
         translator = Translator(settings.GEMINI_API_KEY)
@@ -321,7 +321,7 @@ async def initialize_recognizer():
     if recognizer is None:
         try:
             logger.info("Initializing SpeechRecognizer (model=tiny, device=%s)", settings.DEVICE)
-            recognizer = SpeechRecognizer(settings.TRANSLATION_TARGET_LANGUAGE, settings.DEVICE)
+            recognizer = SpeechRecognizer(settings.TRANSLATION_TARGET_LANGUAGE, settings.DEVICE,settings.MODEL)
         except Exception as e:
             logger.exception("Failed to initialize recognizer")
             recognizer = None

@@ -6,16 +6,17 @@ import io
 from faster_whisper import WhisperModel
 
 class SpeechRecognizer:
-    def __init__(self, target_language, device):
+    def __init__(self, target_language, device,model):
         self.target_language = target_language
         self.device = device
+        self.model=model
 
         # Determine compute type based on device
         compute_type = "float32" if device == "cpu" else "float16"
-        print(f"Initializing WhisperModel with model=tiny, device={device}, compute_type={compute_type}")
+        print(f"Initializing WhisperModel with model={model}, device={device}, compute_type={compute_type}")
         
         # Using tiny model for faster processing (Note: model weights are saved in FP16)
-        self.model_fast_whisper = WhisperModel("tiny", device=device, compute_type=compute_type)
+        self.model_fast_whisper = WhisperModel(model, device=device, compute_type=compute_type)
         
     def recognize(self, wav_file):
         result, lang = self.recognize_fast_whisper(wav_file)
