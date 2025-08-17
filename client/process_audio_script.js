@@ -241,13 +241,61 @@ async function processAudio(audioBlob) {
         console.log('Processed audio:', result);
         
         // Display the results
-        addMessage(`- Original: "${result.original_text}" (${result.detected_language})`);
         addMessage(`- Translated: "${result.translated_text}"`);
+
+        if (result.translated_audio_blob) {
+    try {
+        console.log("TEST HERE", result.translated_audio_blob);
+
+        // Convert base64 to Blob (translated audio)
+        const translatedBlob = base64ToBlob(result.translated_audio_blob, 'audio/wav');
+
+        // ⚡ Use the actual recorded audio blob from MediaRecorder
+        // Make sure you pass `recordedBlob` into this function
+        const referenceBlob = audioBlob;  
+
+        // Prepare FormData
+        const formData = new FormData();
+        const inputFile = new File([translatedBlob], "input.wav", { type: "audio/wav" });
+        const referenceFile = new File([referenceBlob], "reference.wav", { type: "audio/wav" });
+        formData.append("input", inputFile);
+        formData.append("reference", referenceFile);
+
+        console.log("FormData prepared:", formData);
+
+        // Send to Flask
+        const response = await fetch('http://127.0.0.1:5000/convert', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            console.error('Error converting audio:', response.statusText);
+            error_message(`Error converting audio: ${response.statusText}`);
+            return;
+        }
+
+        // Get converted audio back
+        const arrayBuffer = await response.arrayBuffer();
+        const convertedBlob = new Blob([arrayBuffer], { type: "audio/wav" });
+        const final = await blobToBase64(convertedBlob);
+        addAudioToQueue(final);
+        // const audioUrl = URL.createObjectURL(convertedBlob);
+
+        // // Play audio
+        // const audio = new Audio(audioUrl);
+        // audio.play();
+
+    } catch (error) {
+        console.error('Error during audio conversion:', error);
+        error_message(`Audio conversion error: ${error.message}`);
+    }
+}
         
         // Add translated audio to queue for sequential playback
-        if (result.translated_audio_blob) {
-            addAudioToQueue(result.translated_audio_blob);
-        }
+        // if (result.translated_audio_blob) {
+        //     addAudioToQueue(result.translated_audio_blob);
+        // }
         
     } catch (error) {
         console.error('Error processing audio:', error);
@@ -330,6 +378,18 @@ async function blobToBase64(blob) {
         reader.readAsDataURL(blob);
     });
 }
+
+function base64ToBlob(base64, mimeType = "audio/wav") {
+    const binary = atob(base64); 
+    const len = binary.length;
+    const buffer = new ArrayBuffer(len);
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < len; i++) {
+        view[i] = binary.charCodeAt(i);
+    }
+    return new Blob([buffer], { type: mimeType });
+}
+
 
 function addMessage(message) {
     const messagesDiv = document.getElementById('messages');
