@@ -227,7 +227,7 @@ async function processAudio(audioBlob) {
             body: JSON.stringify({
                 audio_blob: await blobToBase64(audioBlob),
                 source_lang: 'auto', // auto-detect
-                target_lang: 'ja'    // translate to Japanese
+                target_lang: document.getElementById('target-language-select').value    // translate to language selected
             })
         });
 
@@ -494,9 +494,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load saved settings
     loadSilenceTime();
     loadSilenceThreshold();
+    loadLanguagePreference(); // Load saved language preference
+    
+    // Language selection event listener
+    const languageSelect = document.getElementById('target-language-select');
+    if (languageSelect) {
+        languageSelect.addEventListener('change', saveLanguagePreference);
+    }
     
     addMessage('• Audio Translation System Ready');
 });
+
+// Language selection management
+function saveLanguagePreference() {
+    const selectedLang = document.getElementById('target-language-select').value;
+    localStorage.setItem('preferred-target-language', selectedLang);
+}
+
+function loadLanguagePreference() {
+    const savedLang = localStorage.getItem('preferred-target-language');
+    if (savedLang) {
+        const selectElement = document.getElementById('target-language-select');
+        if (selectElement) {
+            selectElement.value = savedLang;
+        }
+    }
+}
 
 // Cleanup on page unload
 window.onbeforeunload = () => {

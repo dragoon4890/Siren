@@ -1,11 +1,33 @@
 import google.generativeai as genai
 import logging
 
-# Simple mapping from ISO 639-1 codes to English language names to help Gemini when codes are ambiguous
+# Comprehensive mapping from ISO 639-1 codes to English language names for better Gemini translation
 LANG_CODE_TO_NAME = {
-    'en': 'English', 'ja': 'Japanese', 'es': 'Spanish', 'fr': 'French', 'de': 'German', 'ko': 'Korean',
-    'zh': 'Chinese', 'ru': 'Russian', 'pt': 'Portuguese', 'it': 'Italian', 'hi': 'Hindi', 'ar': 'Arabic',
-    'tr': 'Turkish', 'vi': 'Vietnamese', 'th': 'Thai', 'id': 'Indonesian'
+    # Major world languages
+    'en': 'English', 'es': 'Spanish', 'fr': 'French', 'de': 'German', 'it': 'Italian', 'pt': 'Portuguese',
+    'ru': 'Russian', 'ja': 'Japanese', 'ko': 'Korean', 'zh': 'Chinese', 'ar': 'Arabic', 'hi': 'Hindi',
+    'th': 'Thai', 'vi': 'Vietnamese', 'tr': 'Turkish', 'id': 'Indonesian',
+    
+    # Chinese variants
+    'cmn-Hant-TW': 'Traditional Chinese', 'cmn-Hans-CN': 'Simplified Chinese',
+    
+    # Language variants with regional codes
+    'nb-NO': 'Norwegian', 'fil-PH': 'Filipino',
+    
+    # European languages
+    'pl': 'Polish', 'nl': 'Dutch', 'sv': 'Swedish', 'no': 'Norwegian', 'da': 'Danish', 'fi': 'Finnish',
+    'cs': 'Czech', 'hu': 'Hungarian', 'ro': 'Romanian', 'bg': 'Bulgarian', 'hr': 'Croatian', 'sk': 'Slovak',
+    'sl': 'Slovenian', 'et': 'Estonian', 'lv': 'Latvian', 'lt': 'Lithuanian', 'uk': 'Ukrainian', 'el': 'Greek',
+    
+    # Middle Eastern and South Asian languages
+    'he': 'Hebrew', 'fa': 'Persian', 'ur': 'Urdu', 'bn': 'Bengali', 'gu': 'Gujarati', 'kn': 'Kannada',
+    'ml': 'Malayalam', 'mr': 'Marathi', 'ta': 'Tamil', 'te': 'Telugu', 'ne': 'Nepali', 'si': 'Sinhala',
+    
+    # Southeast Asian and other languages
+    'ms': 'Malay', 'tl': 'Filipino', 'my': 'Myanmar', 'km': 'Khmer', 'lo': 'Lao', 'ka': 'Georgian',
+    'hy': 'Armenian', 'az': 'Azerbaijani', 'kk': 'Kazakh', 'uz': 'Uzbek', 'sq': 'Albanian', 'bs': 'Bosnian',
+    'sr': 'Serbian', 'mk': 'Macedonian', 'mt': 'Maltese', 'is': 'Icelandic', 'ga': 'Irish', 'cy': 'Welsh',
+    'eu': 'Basque', 'ca': 'Catalan', 'af': 'Afrikaans', 'sw': 'Swahili', 'am': 'Amharic', 'la': 'Latin'
 }
 
 
