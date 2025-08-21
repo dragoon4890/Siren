@@ -63,7 +63,25 @@ Unlike traditional batch-processing systems, our architecture provides:
 - **Sequential Audio Management**: FIFO queue system ensures proper playback order with automatic memory cleanup
 - **WebSocket Communication**: Real-time bidirectional data exchange for streaming applications
 
+### Demo
 
+English to Hindi Happy -->
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/f8ddf200-c787-482c-95dc-15688b28edd6
+
+Hindi to English -->
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/4ff70ab0-522b-4ea6-88a2-21af4333f0f1
+
+English to Hindi Sad -->
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/9d21314e-d45f-4cd0-8682-c4f2f5b0ab7c
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/a3e3c26d-50c0-419c-925c-20fc5b4e3d16
+
+English to Hindi Angry -->
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/e649d6d4-0530-44b9-ba31-503d70829b40
 
 ## Setup Instructions
 
