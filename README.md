@@ -83,6 +83,32 @@ English to Hindi Angry -->
 
 https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/e649d6d4-0530-44b9-ba31-503d70829b40
 
+Demo for differences with the TTS:
+
+Original Clip:
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/b4f93ed2-c8b6-4e30-b172-1a42dbb8d993
+
+Translation to Telegu with Google Translate TTS:
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/6e2177ef-3490-4328-ab97-7445ddfb26a5
+
+Translation to Telegu with Indic TTS:
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/23f87228-6b8e-4361-9b61-1b53eb04f299
+
+Original Clip:
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/519448b6-b091-48fc-aa7a-d4f0264dad7f
+
+Translation to Telegu with Google Translate TTS:
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/0dbfad69-18d0-4af8-b066-fdf41aecf28b
+
+Transaltion to Telegu with Indic TTS:
+
+https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/364eb17b-bb34-49b3-ae41-73b000903cf5
+
 ## Setup Instructions
 
 ### 1. Environment Setup
