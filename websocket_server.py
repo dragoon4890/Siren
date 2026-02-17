@@ -1,17 +1,104 @@
+"""
+Faster-Whisper Translation Server with Optimized Queue Management
+
+This module provides a high-performance real-time audio translation server
+with voice cloning capabilities using an advanced dual-stage queue system
+for optimal throughput and resource utilization.
+
+Key Features:
+- Real-time WebSocket audio processing
+- Dual-stage queue system (preprocessing + RVC bottleneck isolation)
+- Speech recognition via Faster-Whisper
+- Translation via Google Gemini
+- Text-to-speech with multiple backends
+- Voice cloning via Seed-VC/RVC integration
+- Comprehensive monitoring and health checks
+"""
 import datetime
 import logging
-from typing import Tuple
-from aiohttp import web
 import base64
 import asyncio
-from asyncio import Queue
 import time
+from typing import Tuple, Optional
+from asyncio import Queue
+
+# Third-party imports
+from aiohttp import web
 import aiohttp
 
+# Local imports
 import settings
 from speech_recognizer import SpeechRecognizer
 from translator import Translator
 from soundoftext_tts import synthesize_soundoftext
+
+# ------------------------------------------------------------
+# TTS Functions
+# ------------------------------------------------------------
+
+async def synthesize_indic(link: str, translated_text: str, target_lang: str) -> bytes:
+    """
+    Call external Indic TTS endpoint and return audio bytes.
+    
+    This function interfaces with external TTS services (typically Colab-hosted)
+    to generate high-quality text-to-speech audio for various languages.
+    
+    Args:
+        link: The TTS endpoint URL (e.g., "https://your-colab-url.com/tts")
+        translated_text: Text to synthesize
+        target_lang: Target language code
+        
+    Returns:
+        Audio bytes from the TTS service
+        
+    Raises:
+        Exception: If TTS synthesis fails or endpoint is unreachable
+    """
+    if not link or not translated_text.strip():
+        raise ValueError("Link and translated_text are required")
+        
+    try:
+        # Prepare request payload to match your endpoint
+        payload = {
+            'text': translated_text,
+            'language': target_lang
+        }
+        
+        # Make HTTP request to the indic TTS endpoint
+        timeout = aiohttp.ClientTimeout(total=30)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(
+                link,
+                headers={'Content-Type': 'application/json'},
+                json=payload
+            ) as response:
+                
+                if response.status != 200:
+                    error_text = await response.text()
+                    logger.error(f"Indic TTS error ({response.status}): {error_text}")
+                    raise Exception(f"TTS endpoint returned {response.status}: {error_text}")
+                
+                # Parse JSON response
+                result = await response.json()
+                
+                # Check for error in response
+                if 'error' in result:
+                    raise Exception(f"TTS synthesis failed: {result['error']}")
+                
+                # Extract base64 audio data
+                audio_b64 = result.get('audio_b64')
+                if not audio_b64:
+                    raise Exception("No audio_b64 in TTS response")
+                
+                # Decode base64 to bytes
+                audio_bytes = base64.b64decode(audio_b64)
+                
+                logger.info(f"Indic TTS successful ({len(audio_bytes)} bytes, lang={target_lang})")
+                return audio_bytes
+                
+    except Exception as e:
+        logger.exception(f"Error in synthesize_indic: {e}")
+        raise Exception(f"Indic TTS failed: {e}")
 
 # ------------------------------------------------------------
 # CORS Middleware
@@ -154,7 +241,13 @@ async def process_preprocessing_stage(request_data):
         translated_text = await translate_text(original_text, detected_lang, target_lang)
 
         # Step 3: Generate TTS for the translated text (~0.8s)  
-        translated_audio_blob = await synthesize_soundoftext(translated_text, target_lang)
+        # Option 1: Use sound-of-text (existing)
+        # translated_audio_blob = await synthesize_soundoftext(translated_text, target_lang)
+        
+        # Option 2: Use indic TTS endpoint (new)
+        # Replace with your actual endpoint URL
+        indic_tts_link = "https://your-colab-url.trycloudflare.com/tts"  # Update this URL
+        translated_audio_blob = await synthesize_indic(indic_tts_link, translated_text, target_lang)
 
         # Prepare data for RVC stage
         request_data.update({
@@ -187,7 +280,12 @@ async def process_rvc_stage(request_data):
         logger.info(f"RVC processing request {request_id}")
         
         # Step 4: RVC Voice Conversion (~10s) - THE BOTTLENECK
-        final_audio_blob = await apply_rvc_conversion(translated_audio_blob, target_lang)
+        # Use original audio as reference for voice cloning
+        final_audio_blob = await apply_rvc_conversion(
+            translated_audio_blob,      # Input: TTS translated audio
+            request_data['audio_blob'], # Reference: Original speaker's voice  
+            target_lang
+        )
 
         # Encode audio blobs to Base64
         original_audio_base64 = base64.b64encode(request_data['audio_blob']).decode('utf-8')
@@ -221,19 +319,33 @@ async def process_rvc_stage(request_data):
             'status': 500
         })
 
-async def apply_rvc_conversion(audio_blob: bytes, target_lang: str) -> bytes:
-    """Apply RVC voice conversion to the audio blob."""
+async def apply_rvc_conversion(input_audio_blob: bytes, reference_audio_blob: bytes, target_lang: str) -> bytes:
+    """
+    Apply RVC voice conversion to the audio blob using original speaker's voice as reference.
+    
+    Args:
+        input_audio_blob: TTS translated audio to be voice-converted
+        reference_audio_blob: Original speaker's audio for voice cloning reference
+        target_lang: Target language code
+        
+    Returns:
+        Voice-converted audio bytes
+    """
     try:
         # Prepare the audio data for RVC API call
-        # Convert audio blob to the format expected by RVC endpoint
+        # Use the threaded Seed-VC server format
         
         async with aiohttp.ClientSession() as session:
-            # Create form data for the RVC API call
+            # Create form data for the RVC API call - matches new threaded server
             data = aiohttp.FormData()
-            data.add_field('audio', audio_blob, filename='audio.wav', content_type='audio/wav')
+            data.add_field('input', input_audio_blob, filename='input.wav', content_type='audio/wav')
+            data.add_field('reference', reference_audio_blob, filename='reference.wav', content_type='audio/wav')
             
-            # Make the RVC conversion request
-            async with session.post('http://127.0.0.1:5000/convert', data=data) as response:
+            # Make the RVC conversion request to your threaded Seed-VC server
+            # Update this URL to your actual T4 server when deployed
+            rvc_server_url = 'http://127.0.0.1:5000/convert'  # Change to your T4 server URL
+            
+            async with session.post(rvc_server_url, data=data) as response:
                 if response.status == 200:
                     converted_audio = await response.read()
                     logger.info(f"RVC conversion successful ({len(converted_audio)} bytes)")
@@ -241,13 +353,13 @@ async def apply_rvc_conversion(audio_blob: bytes, target_lang: str) -> bytes:
                 else:
                     error_text = await response.text()
                     logger.error(f"RVC conversion failed ({response.status}): {error_text}")
-                    # Return original audio if RVC fails
-                    return audio_blob
+                    # Return input audio if RVC fails (graceful degradation)
+                    return input_audio_blob
                     
     except Exception as e:
         logger.exception(f"Error in RVC conversion: {e}")
-        # Return original audio if RVC fails
-        return audio_blob
+        # Return input audio if RVC fails (graceful degradation)
+        return input_audio_blob
 
 # Queue Monitoring Endpoints
 async def get_queue_status(request: web.Request) -> web.Response:

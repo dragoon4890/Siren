@@ -7,7 +7,7 @@ especially for languages where meaning changes with context.
 """
 import google.generativeai as genai
 import logging
-from typing import Optional
+from typing import Optional, Dict
 
 # Comprehensive mapping from ISO 639-1 codes to English language names for better Gemini translation
 LANG_CODE_TO_NAME = {
@@ -37,6 +37,7 @@ LANG_CODE_TO_NAME = {
     'sr': 'Serbian', 'mk': 'Macedonian', 'mt': 'Maltese', 'is': 'Icelandic', 'ga': 'Irish', 'cy': 'Welsh',
     'eu': 'Basque', 'ca': 'Catalan', 'af': 'Afrikaans', 'sw': 'Swahili', 'am': 'Amharic', 'la': 'Latin'
 }
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -86,6 +87,15 @@ class Translator:
         Args:
             text: Text to translate (required)
             target_lang: Target language code or name (e.g., 'ja', 'Japanese')
+            source_lang: Source language code or name (optional, auto-detected if None)
+
+        Returns:
+            Translated text string, or empty string if translation fails
+
+        Note:
+            Uses minimal prompts to reduce latency and prevent hallucinations.
+            Language codes are mapped to full names for better model understanding.
+        """
             source_lang: Source language code or name (optional, auto-detected if None)
 
         Returns:

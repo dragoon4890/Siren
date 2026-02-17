@@ -7,12 +7,18 @@ import asyncio
 import aiohttp
 import logging
 from typing import Optional
-import time
 
 logger = logging.getLogger("soundoftext_tts")
 
 class SoundOfTextTTS:
-    """Sound of Text API client for high-quality TTS synthesis."""
+    """Sound of Text API client for high-quality TTS synthesis.
+    
+    Args:
+        timeout: Request timeout in seconds (default: 30)
+        max_attempts: Maximum polling attempts for completion (default: 20)
+        poll_interval: Base polling interval in seconds (default: 1.5)
+        use_exponential_backoff: Use exponential backoff for polling (default: False)
+    """
     
     BASE_URL = "https://api.soundoftext.com/sounds"
     FILES_URL = "https://files.soundoftext.com"
@@ -46,8 +52,18 @@ class SoundOfTextTTS:
         'vi': 'vi-VN'
     }
     
-    def __init__(self, timeout: int = 30):
+    def __init__(self, timeout: int = 30, max_attempts: int = 20, poll_interval: float = 1.5, use_exponential_backoff: bool = False):
+        if timeout <= 0:
+            raise ValueError("Timeout must be positive")
+        if max_attempts <= 0:
+            raise ValueError("Max attempts must be positive")
+        if poll_interval <= 0:
+            raise ValueError("Poll interval must be positive")
+            
         self.timeout = timeout
+        self.max_attempts = max_attempts
+        self.poll_interval = poll_interval
+        self.use_exponential_backoff = use_exponential_backoff
         self.session: Optional[aiohttp.ClientSession] = None
     
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -117,11 +133,16 @@ class SoundOfTextTTS:
         
         # Step 2: Poll for completion and get audio URL
         check_url = f"{self.BASE_URL}/{audio_id}"
-        max_attempts = 20  # 20 attempts * 1.5 seconds = 30 seconds max wait
         
-        for attempt in range(max_attempts):
+        for attempt in range(self.max_attempts):
             try:
-                await asyncio.sleep(1.5)  # Wait between checks
+                # Use exponential backoff if enabled, otherwise fixed interval
+                if self.use_exponential_backoff:
+                    delay = min(self.poll_interval * (2 ** attempt), 10.0)  # Cap at 10 seconds
+                else:
+                    delay = self.poll_interval
+                
+                await asyncio.sleep(delay)  # Wait between checks
                 
                 async with session.get(check_url, timeout=self.timeout) as response:
                     if not response.ok:
@@ -188,15 +209,28 @@ class SoundOfTextTTS:
             raise RuntimeError(f"Failed to download audio: {e}")
 
 
-# Singleton instance for reuse
+# Module-level TTS instance for reuse
 _tts_instance: Optional[SoundOfTextTTS] = None
+_instance_lock = asyncio.Lock()
 
 async def get_tts_instance() -> SoundOfTextTTS:
-    """Get or create the singleton TTS instance."""
+    """Get or create the singleton TTS instance with proper async locking."""
     global _tts_instance
     if _tts_instance is None:
-        _tts_instance = SoundOfTextTTS()
+        async with _instance_lock:
+            # Double-check pattern for thread safety
+            if _tts_instance is None:
+                _tts_instance = SoundOfTextTTS()
     return _tts_instance
+
+async def cleanup_tts_instance():
+    """Cleanup the global TTS instance."""
+    global _tts_instance
+    if _tts_instance is not None:
+        async with _instance_lock:
+            if _tts_instance is not None:
+                await _tts_instance.close()
+                _tts_instance = None
 
 async def synthesize_soundoftext(text: str, lang_code: str = 'en') -> bytes:
     """Convenience function for TTS synthesis.
