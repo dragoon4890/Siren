@@ -1,0 +1,88 @@
+!pip install flask flask-cors transformers torch soundfile parler-tts cloudflared -q
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import io, base64, torch, soundfile as sf
+from transformers import AutoTokenizer
+from parler_tts import ParlerTTSForConditionalGeneration
+
+# Config
+MODEL_ID = "ai4bharat/indic-parler-tts-pretrained"
+NEUTRAL_PROMPT = "Neutral tone, medium pace, studio quality."
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+# Load once
+tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
+model = ParlerTTSForConditionalGeneration.from_pretrained(
+    MODEL_ID, trust_remote_code=True
+).to(DEVICE).eval()
+
+def synthesize_wav_base64(text: str, language: str | None = None) -> dict:
+    sr = getattr(getattr(model, "config", None), "sampling_rate", 24000)
+    text_target = f"[{language.strip()}] {text.strip()}" if language else text.strip()
+
+    desc_ids = tokenizer(NEUTRAL_PROMPT, return_tensors="pt").input_ids.to(DEVICE)
+    text_ids = tokenizer(text_target, return_tensors="pt").input_ids.to(DEVICE)
+
+    with torch.no_grad():
+        out = model.generate(
+            input_ids=desc_ids,
+            prompt_input_ids=text_ids,
+            do_sample=True,
+            temperature=1.0,
+        )
+        wav = out.squeeze().detach().cpu().numpy()
+
+    buf = io.BytesIO()
+    sf.write(buf, wav, sr, subtype="PCM_16", format="WAV")
+    buf.seek(0)
+    audio_b64 = base64.b64encode(buf.read()).decode("ascii")
+    return {"audio_b64": audio_b64, "sample_rate": sr, "mime": "audio/wav"}
+
+
+app = Flask(__name__)
+CORS(app)
+
+@app.post("/tts_bytes")
+def tts_bytes():
+    data = request.get_json(silent=True) or {}
+    text = data.get("text") or data.get("translated_text")
+    language = data.get("language") or data.get("lang")
+    if not text or not isinstance(text, str) or not text.strip():
+        return jsonify(error="Missing required 'text'"), 400
+    try:
+        result = synthesize_wav_base64(text, language)
+        raw = base64.b64decode(result["audio_b64"])
+        return app.response_class(raw, mimetype="audio/wav",
+            headers={"Content-Disposition": 'inline; filename="tts.wav"'})
+    except Exception as e:
+        return jsonify(error=f"TTS synthesis failed: {type(e).__name__}: {e}"), 500
+
+@app.post("/tts")
+def tts():
+    data = request.get_json(silent=True) or {}
+    text = data.get("text") or data.get("translated_text")
+    language = data.get("language") or data.get("lang")
+    if not text or not isinstance(text, str) or not text.strip():
+        return jsonify(error="Missing required 'text'"), 400
+    try:
+        result = synthesize_wav_base64(text, language)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify(error=f"TTS synthesis failed: {type(e).__name__}: {e}"), 500
+
+@app.get("/health")
+def health():
+    return jsonify(status="ok", model=MODEL_ID, device=DEVICE), 200
+
+
+
+import threading, subprocess
+
+def run_flask():
+    app.run(host="127.0.0.1", port=5001, debug=False)
+
+threading.Thread(target=run_flask).start()
+
+# Start Cloudflare tunnel (public URL)
+!cloudflared tunnel --url http://127.0.0.1:5001 --no-autoupdate
