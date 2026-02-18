@@ -83,12 +83,12 @@ Unlike traditional batch-processing systems, our architecture provides:
 
 ##### Angry Tone
 **English to Hindi (Angry)**
-<video src="https://github.com/user-attachments/assets/63667a08-3848-416e-bc6d-729095afad11" controls width="400"></video>
+<video src="https://github.com/user-attachments/assets/61ccd14a-32d1-4a8d-8f43-c52f3e71d361" controls width="400"></video>
 
 #### Language Translation Demos
 
 **English to Hindi**
-<video src="https://github.com/user-attachments/assets/61ccd14a-32d1-4a8d-8f43-c52f3e71d361" controls width="400"></video>
+<video src="https://github.com/user-attachments/assets/63667a08-3848-416e-bc6d-729095afad11" controls width="400"></video>
 
 **Hindi to English**
 <video src="https://github.com/user-attachments/assets/68f06ab3-f493-4848-b6ed-1cf2340f9664" controls width="400"></video>
@@ -97,7 +97,7 @@ Unlike traditional batch-processing systems, our architecture provides:
 
 The following demos showcase the difference between standard TTS and the emotion-preserved output:
 
-**Example 1:**
+**Example 1 (clip_006 family):**
 *   **Original Clip**
     <video src="https://github.com/user-attachments/assets/48225c96-f8af-45e0-a48d-8a64257db865" controls width="400"></video>
 *   **Translation (Google Translate TTS)**
@@ -105,7 +105,7 @@ The following demos showcase the difference between standard TTS and the emotion
 *   **Translation (Indic TTS)**
     <video src="https://github.com/user-attachments/assets/5866e550-d97d-484c-aea0-0ba8918964cc" controls width="400"></video>
 
-**Example 2:**
+**Example 2 (clip_015 family):**
 *   **Original Clip**
     <video src="https://github.com/user-attachments/assets/6bbd0517-5b54-4106-9c2c-a8e30e803259" controls width="400"></video>
 *   **Translation (Google Translate TTS)**
