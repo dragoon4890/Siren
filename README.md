@@ -1,5 +1,8 @@
-# MITB_25LAI04MITB_Live_translation_with_emotions
-SRIB-PRISM Program
+# SIREN: Live Translation with Emotion Preservation
+
+> **Note:** This project was developed as a **'Work-let'** under the **Samsung PRISM Student Program** (Project ID: **MITB_25LAI04**) in collaboration with Samsung Research Institute Bangalore (SRIB).
+
+A real-time audio translation pipeline that combines speech-to-text, context-aware LLM translation, and voice cloning to preserve the original speaker's voice and emotional nuances.
 
 ## System Architecture
 
@@ -65,49 +68,39 @@ Unlike traditional batch-processing systems, our architecture provides:
 
 ### Demo
 
-English to Hindi Happy -->
+#### English to Hindi
+<video src="assets/e2hgood3.mp4" controls width="400"></video>
 
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/f8ddf200-c787-482c-95dc-15688b28edd6
+#### Hindi to English
+<video src="assets/h2egood1.mp4" controls width="400"></video>
 
-Hindi to English -->
+#### English to Hindi (Happy)
+<video src="assets/happy1.mp4" controls width="400"></video>
 
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/4ff70ab0-522b-4ea6-88a2-21af4333f0f1
+#### English to Hindi (Sad)
+<video src="assets/good3.mp4" controls width="400"></video>
 
-English to Hindi Sad -->
+#### English to Hindi (Angry)
+<video src="assets/E2HOKAY.mp4" controls width="400"></video>
 
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/9d21314e-d45f-4cd0-8682-c4f2f5b0ab7c
+#### TTS Engine Comparison
+The following demos showcase the difference between standard TTS and the emotion-preserved output:
 
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/a3e3c26d-50c0-419c-925c-20fc5b4e3d16
+**Example 1:**
+*   **Original Clip**
+    <video src="assets/clip_015.mp4" controls width="300"></video>
+*   **Translation (Google Translate TTS)**
+    <video src="assets/clip_015_convert.mp4" controls width="300"></video>
+*   **Translation (Indic TTS)**
+    <video src="assets/clip_015_convert_.mp4" controls width="300"></video>
 
-English to Hindi Angry -->
-
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/e649d6d4-0530-44b9-ba31-503d70829b40
-
-Demo for differences with the TTS:
-
-Original Clip:
-
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/b4f93ed2-c8b6-4e30-b172-1a42dbb8d993
-
-Translation to Telegu with Google Translate TTS:
-
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/6e2177ef-3490-4328-ab97-7445ddfb26a5
-
-Translation to Telegu with Indic TTS:
-
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/23f87228-6b8e-4361-9b61-1b53eb04f299
-
-Original Clip:
-
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/519448b6-b091-48fc-aa7a-d4f0264dad7f
-
-Translation to Telegu with Google Translate TTS:
-
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/0dbfad69-18d0-4af8-b066-fdf41aecf28b
-
-Transaltion to Telegu with Indic TTS:
-
-https://github.ecodesamsung.com/SRIB-PRISM/MITB_25LAI04MITB_Live_translation_with_emotions/assets/36530/364eb17b-bb34-49b3-ae41-73b000903cf5
+**Example 2:**
+*   **Original Clip**
+    <video src="assets/clip_006.mp4" controls width="300"></video>
+*   **Translation (Google Translate TTS)**
+    <video src="assets/clip_006_convert.mp4" controls width="300"></video>
+*   **Translation (Indic TTS)**
+    <video src="assets/clip_006_convert_.mp4" controls width="300"></video>
 
 ## Setup Instructions
 
