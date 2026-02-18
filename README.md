@@ -69,7 +69,7 @@ Unlike traditional batch-processing systems, our architecture provides:
 ### Demo
 
 #### English to Hindi
-<video src="https://github.com/user-attachments/assets/61ccd14a-32d1-4a8d-8f43-c52f3e71d361" controls width="400"></video>
+<video src="https://github.com/user-attachments/assets/63667a08-3848-416e-bc6d-729095afad11" controls width="400"></video>
 
 #### Hindi to English
 <video src="https://github.com/user-attachments/assets/68f06ab3-f493-4848-b6ed-1cf2340f9664" controls width="400"></video>
@@ -81,26 +81,26 @@ Unlike traditional batch-processing systems, our architecture provides:
 <video src="https://github.com/user-attachments/assets/ec59ed4e-1f05-438c-8977-d148131e25f9" controls width="400"></video>
 
 #### English to Hindi (Angry)
-<video src="https://github.com/user-attachments/assets/63667a08-3848-416e-bc6d-729095afad11" controls width="400"></video>
+<video src="https://github.com/user-attachments/assets/61ccd14a-32d1-4a8d-8f43-c52f3e71d361" controls width="400"></video>
 
 #### TTS Engine Comparison
 The following demos showcase the difference between standard TTS and the emotion-preserved output:
 
 **Example 1:**
 *   **Original Clip**
-    <video src="https://github.com/user-attachments/assets/6bbd0517-5b54-4106-9c2c-a8e30e803259" controls width="400"></video>
-*   **Translation (Google Translate TTS)**
-    <video src="https://github.com/user-attachments/assets/2f5a5be5-e22f-488c-a889-68cdd61ba8b0" controls width="400"></video>
-*   **Translation (Indic TTS)**
-    <video src="https://github.com/user-attachments/assets/ddfb1f18-99f2-4911-9540-b832507239ca" controls width="400"></video>
-
-**Example 2:**
-*   **Original Clip**
     <video src="https://github.com/user-attachments/assets/48225c96-f8af-45e0-a48d-8a64257db865" controls width="400"></video>
 *   **Translation (Google Translate TTS)**
     <video src="https://github.com/user-attachments/assets/c9b72891-1ea6-4258-8fe8-550a7fa97c1d" controls width="400"></video>
 *   **Translation (Indic TTS)**
     <video src="https://github.com/user-attachments/assets/5866e550-d97d-484c-aea0-0ba8918964cc" controls width="400"></video>
+
+**Example 2:**
+*   **Original Clip**
+    <video src="https://github.com/user-attachments/assets/6bbd0517-5b54-4106-9c2c-a8e30e803259" controls width="400"></video>
+*   **Translation (Google Translate TTS)**
+    <video src="https://github.com/user-attachments/assets/2f5a5be5-e22f-488c-a889-68cdd61ba8b0" controls width="400"></video>
+*   **Translation (Indic TTS)**
+    <video src="https://github.com/user-attachments/assets/ddfb1f18-99f2-4911-9540-b832507239ca" controls width="400"></video>
 
 ## Setup Instructions
 
