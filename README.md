@@ -87,20 +87,14 @@ Unlike traditional batch-processing systems, our architecture provides:
 The following demos showcase the difference between standard TTS and the emotion-preserved output:
 
 **Example 1:**
-*   **Original Clip**
-    <audio src="assets/clip_015.mp4" controls></audio>
-*   **Translation (Google Translate TTS)**
-    <audio src="assets/clip_015_convert.mp4" controls></audio>
-*   **Translation (Indic TTS)**
-    <audio src="assets/clip_015_convert_.mp4" controls></audio>
+*   **Original Clip** - [🔊 Play Audio](assets/clip_015.mp4)
+*   **Translation (Google Translate TTS)** - [🔊 Play Audio](assets/clip_015_convert.mp4)
+*   **Translation (Indic TTS)** - [🔊 Play Audio](assets/clip_015_convert_.mp4)
 
 **Example 2:**
-*   **Original Clip**
-    <audio src="assets/clip_006.mp4" controls></audio>
-*   **Translation (Google Translate TTS)**
-    <audio src="assets/clip_006_convert.mp4" controls></audio>
-*   **Translation (Indic TTS)**
-    <audio src="assets/clip_006_convert_.mp4" controls></audio>
+*   **Original Clip** - [🔊 Play Audio](assets/clip_006.mp4)
+*   **Translation (Google Translate TTS)** - [🔊 Play Audio](assets/clip_006_convert.mp4)
+*   **Translation (Indic TTS)** - [🔊 Play Audio](assets/clip_006_convert_.mp4)
 
 ## Setup Instructions
 
