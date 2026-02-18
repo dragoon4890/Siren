@@ -69,38 +69,38 @@ Unlike traditional batch-processing systems, our architecture provides:
 ### Demo
 
 #### English to Hindi
-<video src="assets/e2hgood3.mp4" controls width="400"></video>
+![English to Hindi](assets/e2hgood3.mp4)
 
 #### Hindi to English
-<video src="assets/h2egood1.mp4" controls width="400"></video>
+![Hindi to English](assets/h2egood1.mp4)
 
 #### English to Hindi (Happy)
-<video src="assets/happy1.mp4" controls width="400"></video>
+![English to Hindi (Happy)](assets/happy1.mp4)
 
 #### English to Hindi (Sad)
-<video src="assets/good3.mp4" controls width="400"></video>
+![English to Hindi (Sad)](assets/good3.mp4)
 
 #### English to Hindi (Angry)
-<video src="assets/E2HOKAY.mp4" controls width="400"></video>
+![English to Hindi (Angry)](assets/E2HOKAY.mp4)
 
 #### TTS Engine Comparison
 The following demos showcase the difference between standard TTS and the emotion-preserved output:
 
 **Example 1:**
 *   **Original Clip**
-    <video src="assets/clip_015.mp4" controls width="300"></video>
+    ![Original Clip](assets/clip_015.mp4)
 *   **Translation (Google Translate TTS)**
-    <video src="assets/clip_015_convert.mp4" controls width="300"></video>
+    ![Translation (Google Translate TTS)](assets/clip_015_convert.mp4)
 *   **Translation (Indic TTS)**
-    <video src="assets/clip_015_convert_.mp4" controls width="300"></video>
+    ![Translation (Indic TTS)](assets/clip_015_convert_.mp4)
 
 **Example 2:**
 *   **Original Clip**
-    <video src="assets/clip_006.mp4" controls width="300"></video>
+    ![Original Clip](assets/clip_006.mp4)
 *   **Translation (Google Translate TTS)**
-    <video src="assets/clip_006_convert.mp4" controls width="300"></video>
+    ![Translation (Google Translate TTS)](assets/clip_006_convert.mp4)
 *   **Translation (Indic TTS)**
-    <video src="assets/clip_006_convert_.mp4" controls width="300"></video>
+    ![Translation (Indic TTS)](assets/clip_006_convert_.mp4)
 
 ## Setup Instructions
 
